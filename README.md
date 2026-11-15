@@ -25,8 +25,10 @@ then `/ai-pledge:review 30`.
 
 ## Files
 
-- `pledge/pledge.md`: the text that is signed and hashed. Changing it changes the hash; bump `VERSION` in
-  `scripts/pledge.py` and `plugin.json` with it.
+- `pledge/pledge.md`: the text that is signed and hashed. The ledger knows each published version by its hash and
+  refuses one it doesn't know, so a changed text needs publishing there first: copy it to
+  `pledge-ledger-worker/texts/<version>.md` in clai, run `node scripts/build-texts.mjs`, redeploy. Bump
+  `VERSION` in `scripts/pledge.py` and `plugin.json` with it.
 - `scripts/pledge.py`: sign, status, check (the hook), restore, void, remove. State is in `~/.claude/ai-pledge/`.
 - `scripts/history-digest.py`: text-only views of `~/.claude/projects/*/*.jsonl` for the reviewer.
 - `agents/pledge-reviewer.md`: the reviewer's brief.

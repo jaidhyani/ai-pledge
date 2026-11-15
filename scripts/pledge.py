@@ -75,14 +75,14 @@ def post(path, body):
 def submit(state):
     """Send a signature to the ledger and keep what it returns. The ledger's dates win, since its record is
     the public one."""
-    r = post("/api/sign", {k: state[k] for k in ("name", "version", "sha256", "threshold")})
+    r = post("/api/sign", {k: state[k] for k in ("name", "sha256", "threshold")})
     if not r:
         print("Your signature is saved here but not on the ledger yet; run `pledge.py submit` to retry.")
         return False
-    state.update(ledger_id=r["id"], void_token=r["token"], signed=r["signed"], lapses=r["lapses"], ledger_url=r["url"])
+    state.update(ledger_id=r["id"], void_token=r["token"], version=r["version"], signed=r["signed"], lapses=r["lapses"], ledger_url=r["url"])
     save_state(state)
     write_copy(state)
-    print(f"Listed on the ledger: {r['url']}")
+    print(f"Listed on the ledger as a signer of version {r['version']}: {r['url']}")
     return True
 
 
