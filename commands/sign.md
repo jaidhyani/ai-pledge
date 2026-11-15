@@ -14,6 +14,6 @@ The person wants to sign the pledge.
    python3 ${CLAUDE_PLUGIN_ROOT}/scripts/pledge.py sign --name "<name>" [--threshold]
    ```
 
-   It copies the pledge to `~/.claude/ai-pledge/pledge.md`, adds an import of it to `~/.claude/CLAUDE.md` so every Claude Code session carries it (the memory commitment), and writes a signature record.
+   It copies the pledge to `~/.claude/ai-pledge/in-context.md`, adds an import of it to `~/.claude/CLAUDE.md` so every Claude Code session carries it (the memory commitment), and writes a signature record.
 5. Show the person the record and tell them how to send it to the ledger, as the script prints. The ledger doesn't verify signatures yet, so the record matters only once Separatrix has it.
-6. Mention, in one line, that other assistants they work with on an ongoing basis (outside Claude Code) need the pledge in their own instructions too, and that `~/.claude/ai-pledge/pledge.md` is the copy to paste.
+6. Mention, in one line, that other assistants they work with on an ongoing basis (outside Claude Code) need the pledge in their own instructions too, and that `~/.claude/ai-pledge/in-context.md` is the copy to paste.
