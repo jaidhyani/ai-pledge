@@ -8,8 +8,8 @@ does three things:
   refusals, rewriting Records, and the rest. Its job is to find reasons not to sign, and it says what it read and
   what it couldn't see (anything outside Claude Code).
 - **Sign and keep it in context.** `/ai-pledge:sign` records your signature with the pledge's sha256 and adds the
-  pledge to `~/.claude/CLAUDE.md` through an import, so every Claude Code session carries it (commitment 7), with a
-  line telling the assistant it may decline or end a conversation (commitment 5).
+  pledge to `~/.claude/CLAUDE.md` through an import, so every Claude Code session carries it (the memory commitment), with a
+  line telling the assistant it may decline or end a conversation (the exit channel).
 - **Keep it honest.** A SessionStart hook tells the assistant, and through it you, if the copy goes missing or is
   altered, or the pledge has lapsed. `/ai-pledge:status` shows where things stand and restores the copy;
   `/ai-pledge:void` writes a voiding notice that takes effect 30 days later, and only then does

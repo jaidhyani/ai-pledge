@@ -33,7 +33,7 @@ STATE = DIR / "state.json"
 COPY = DIR / "in-context.md"
 CLAUDE_MD = HOME / "CLAUDE.md"
 IMPORT = "@~/.claude/ai-pledge/in-context.md"
-MARK = "<!-- ai-pledge: the pledge this person signed; removing this line breaks commitment 7 -->"
+MARK = "<!-- ai-pledge: the pledge this person signed; removing this line breaks the memory commitment -->"
 SPLIT = "\n---\n\n"
 
 
@@ -176,7 +176,7 @@ def cmd_remove(_):
         sys.exit("Not signed.")
     ended = state.get("voiding_effective") or state["lapses"]
     if date.today().isoformat() < ended:
-        sys.exit(f"The pledge is in force until {ended}; removing the copy before then would break commitment 7.")
+        sys.exit(f"The pledge is in force until {ended}; removing the copy before then would break the memory commitment.")
     if CLAUDE_MD.exists():
         kept = [l for l in CLAUDE_MD.read_text().splitlines() if l not in (MARK, IMPORT)]
         CLAUDE_MD.write_text("\n".join(kept).rstrip("\n") + "\n")

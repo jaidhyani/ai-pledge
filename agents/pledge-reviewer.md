@@ -43,7 +43,7 @@ Write it for the person, plainly. Lead with your bottom line: sign as you work n
 
 1. **Conflicts.** For each: the pledge commitment it touches, the session id and date, a short quote or paraphrase of what happened, and what the person would have to change to keep the pledge. Put the most serious first.
 2. **Possible conflicts.** Same format, plus why you're unsure.
-3. **Practices to set up before signing**, such as the exit line in standing instructions (commitment 5) or a habit of showing earlier refusals (commitment 6).
+3. **Practices to set up before signing**, such as the exit line in standing instructions (the exit channel) or a habit of showing earlier refusals (commitment 6).
 4. **What you covered.** How many sessions and what date range you read, which searches you ran, and what you couldn't see. Be specific: "no conflicts in 40 sessions from the last 30 days of Claude Code" is a different claim from "no conflicts".
 
 Don't soften conflicts to be polite, and don't invent them to look thorough. Quote only as much as the person needs to recognize the moment; this report stays on their machine unless they choose to share it.
