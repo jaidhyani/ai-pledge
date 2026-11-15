@@ -5,7 +5,8 @@ State lives in ~/.claude/ai-pledge/: state.json (who signed what, when), in-cont
 Claude Code session loads, through an import line in ~/.claude/CLAUDE.md) and the signature and voiding
 records. The pledge text that is hashed and signed is the plugin's pledge/pledge.md, byte for byte.
 
-  pledge.py sign --name NAME [--threshold]
+  pledge.py sign --name NAME [--threshold]   sign, and submit the signature to the ledger
+  pledge.py submit         retry a submission that didn't reach the ledger
   pledge.py status
   pledge.py check          SessionStart hook: JSON for Claude Code, silent when all is well
   pledge.py restore        rewrite a missing or altered copy
@@ -15,7 +16,10 @@ records. The pledge text that is hashed and signed is the plugin's pledge/pledge
 import argparse
 import hashlib
 import json
+import os
 import sys
+import urllib.error
+import urllib.request
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -24,8 +28,8 @@ PLEDGE = PLUGIN / "pledge" / "pledge.md"
 VERSION = "0.2"
 TERM_DAYS = 30
 NOTICE_DAYS = 30
-# Where signature and voiding records go. Separatrix sets this before the plugin is published.
-LEDGER_CONTACT = "[ledger address, to be set by Separatrix]"
+# Separatrix's public ledger (a demo as of 11/14: it doesn't verify who signs).
+LEDGER = os.environ.get("PLEDGE_LEDGER_URL", "https://pledge-ledger.separatrix.ai")
 
 HOME = Path.home() / ".claude"
 DIR = HOME / "ai-pledge"
@@ -48,6 +52,38 @@ def load_state():
 def save_state(state):
     DIR.mkdir(parents=True, exist_ok=True)
     STATE.write_text(json.dumps(state, indent=2) + "\n")
+    STATE.chmod(0o600)  # holds the void token
+
+
+def post(path, body):
+    """POST to the ledger; returns its JSON, or None with a reason printed if it can't be reached."""
+    req = urllib.request.Request(f"{LEDGER}{path}", data=json.dumps(body).encode(),
+                                 headers={"content-type": "application/json"}, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=20) as r:
+            return json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        try:
+            print(f"The ledger refused it: {json.loads(e.read()).get('error')}", file=sys.stderr)
+        except ValueError:
+            print(f"The ledger refused it (HTTP {e.code}).", file=sys.stderr)
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        print(f"Couldn't reach the ledger at {LEDGER}: {e}", file=sys.stderr)
+    return None
+
+
+def submit(state):
+    """Send a signature to the ledger and keep what it returns. The ledger's dates win, since its record is
+    the public one."""
+    r = post("/api/sign", {k: state[k] for k in ("name", "version", "sha256", "threshold")})
+    if not r:
+        print("Your signature is saved here but not on the ledger yet; run `pledge.py submit` to retry.")
+        return False
+    state.update(ledger_id=r["id"], void_token=r["token"], signed=r["signed"], lapses=r["lapses"], ledger_url=r["url"])
+    save_state(state)
+    write_copy(state)
+    print(f"Listed on the ledger: {r['url']}")
+    return True
 
 
 def preamble(state):
@@ -109,8 +145,18 @@ def cmd_sign(args):
     path = DIR / f"signature-{state['signed']}.txt"
     path.write_text(record + "\n")
     print(record)
-    print(f"\nSaved to {path}. Send it to the ledger at {LEDGER_CONTACT}.")
+    submit(state)
     print(f"The pledge is now in every Claude Code session, through {CLAUDE_MD}. It lapses on {state['lapses']}.")
+
+
+def cmd_submit(_):
+    state = load_state()
+    if not state:
+        sys.exit("Not signed; nothing to submit.")
+    if state.get("ledger_id"):
+        print(f"Already on the ledger: {state['ledger_url']}")
+        return
+    submit(state)
 
 
 def cmd_status(_):
@@ -121,6 +167,7 @@ def cmd_status(_):
     print(f"Signed by {state['name']} on {state['signed']} (v{state['version']}); lapses {state['lapses']}.")
     if state.get("voiding_effective"):
         print(f"Voiding takes effect {state['voiding_effective']}.")
+    print(f"On the ledger: {state['ledger_url']}" if state.get("ledger_id") else "Not on the ledger yet; `pledge.py submit` sends it.")
     found = problems(state)
     print("The in-context copy is intact." if not found else "Problem: " + "; ".join(found) + ".")
 
@@ -134,7 +181,7 @@ def cmd_check(_):
     if found:
         notes.append(
             "The pledge this person signed is not intact in your context: " + "; ".join(found) + ". "
-            "Tell them at the start of your reply. Commitment 7 asks them to restore it within 7 days of "
+            "Tell them at the start of your reply. The memory commitment asks them to restore it within 7 days of "
             "learning of the loss; /ai-pledge:status can restore it."
         )
     if date.today().isoformat() > state["lapses"]:
@@ -155,8 +202,14 @@ def cmd_void(_):
     state = load_state()
     if not state:
         sys.exit("Not signed; nothing to void.")
-    effective = min(date.today() + timedelta(days=NOTICE_DAYS), date.fromisoformat(state["lapses"]))
-    state["voiding_effective"] = effective.isoformat()
+    if state.get("ledger_id"):
+        r = post("/api/void", {"id": state["ledger_id"], "token": state["void_token"]})
+        if not r:
+            sys.exit("The ledger didn't take the notice, so nothing changed; try again.")
+        state["voiding_effective"] = r["voiding_effective"]
+    else:
+        effective = min(date.today() + timedelta(days=NOTICE_DAYS), date.fromisoformat(state["lapses"]))
+        state["voiding_effective"] = effective.isoformat()
     save_state(state)
     write_copy(state)
     notice = (
@@ -167,7 +220,10 @@ def cmd_void(_):
     path = DIR / f"voiding-{date.today().isoformat()}.txt"
     path.write_text(notice + "\n")
     print(notice)
-    print(f"\nSaved to {path}. Send it to the ledger at {LEDGER_CONTACT}.")
+    if state.get("ledger_id"):
+        print(f"\nThe ledger now shows it: {state['ledger_url']}")
+    else:
+        print(f"\nSaved to {path}. Your signature never reached the ledger, so there is nothing there to update.")
 
 
 def cmd_remove(_):
@@ -191,7 +247,7 @@ def main():
     s = sub.add_parser("sign")
     s.add_argument("--name", required=True)
     s.add_argument("--threshold", action="store_true")
-    for name in ("status", "check", "restore", "void", "remove"):
+    for name in ("submit", "status", "check", "restore", "void", "remove"):
         sub.add_parser(name)
     args = p.parse_args()
     globals()[f"cmd_{args.cmd}"](args)

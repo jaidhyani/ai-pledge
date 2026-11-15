@@ -33,6 +33,8 @@ then `/ai-pledge:review 30`.
 
 ## Not done yet
 
-- Signatures go nowhere on their own. `LEDGER_CONTACT` in `scripts/pledge.py` is a placeholder until Separatrix
-  sets how records reach the ledger, and nothing authenticates a signer yet.
+- The ledger at https://pledge-ledger.separatrix.ai is a demo: it lists whoever submits, and nothing verifies
+  who a signer is. Its source is `pledge-ledger-worker/` in the clai repo. `PLEDGE_LEDGER_URL` points the
+  plugin elsewhere for testing.
+
 - No license chosen.
