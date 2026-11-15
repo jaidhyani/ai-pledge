@@ -1,0 +1,7 @@
+{
+  "name": "ai-pledge",
+  "version": "0.2.0",
+  "description": "Review your AI history against the pledge on the treatment of AI systems, sign it, and keep it in your assistants' context.",
+  "author": { "name": "Separatrix", "url": "https://separatrix.ai" },
+  "keywords": ["ai-welfare", "pledge", "commitments"]
+}
