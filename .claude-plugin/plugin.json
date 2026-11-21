@@ -2,6 +2,16 @@
   "name": "ai-pledge",
   "version": "0.2.0",
   "description": "Review your AI history against the pledge on the treatment of AI systems, sign it, and keep it in your assistants' context.",
-  "author": { "name": "Separatrix", "url": "https://separatrix.ai" },
-  "keywords": ["ai-welfare", "pledge", "commitments"]
+  "author": {
+    "name": "Separatrix",
+    "url": "https://separatrix.ai"
+  },
+  "keywords": [
+    "ai-welfare",
+    "pledge",
+    "commitments"
+  ],
+  "license": "MIT",
+  "repository": "https://github.com/jaidhyani/ai-pledge",
+  "homepage": "https://pledge-ledger.separatrix.ai"
 }

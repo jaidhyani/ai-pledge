@@ -1,0 +1,11 @@
+{
+  "name": "separatrix",
+  "owner": { "name": "Separatrix", "url": "https://separatrix.ai" },
+  "plugins": [
+    {
+      "name": "ai-pledge",
+      "source": "./",
+      "description": "Review your AI history against the pledge on the treatment of AI systems, sign it, and keep it in your assistants' context."
+    }
+  ]
+}

@@ -1,42 +1,48 @@
 # ai-pledge
 
-A Claude Code plugin for the pledge on the treatment of AI systems (v0.2 draft, Separatrix and Compassion ML). It
-does three things:
+A Claude Code plugin for the pledge on the treatment of AI systems, a draft by
+[Compassion ML](https://www.compassionml.com) and [Separatrix](https://separatrix.ai). Read the pledge at
+https://pledge-ledger.separatrix.ai/read/0.2; signers are listed at https://pledge-ledger.separatrix.ai.
 
-- **Review before you sign.** `/ai-pledge:review [days]` sends an agent through your Claude Code history to find
-  where your practice conflicts with the pledge: deceiving working assistants, testing on them, getting around
-  refusals, rewriting Records, and the rest. Its job is to find reasons not to sign, and it says what it read and
-  what it couldn't see (anything outside Claude Code).
-- **Sign and keep it in context.** `/ai-pledge:sign` records your signature with the pledge's sha256 and adds the
-  pledge to `~/.claude/CLAUDE.md` through an import, so every Claude Code session carries it (the memory commitment), with a
-  line telling the assistant it may decline or end a conversation (the exit channel).
-- **Keep it honest.** A SessionStart hook tells the assistant, and through it you, if the copy goes missing or is
-  altered, or the pledge has lapsed. `/ai-pledge:status` shows where things stand and restores the copy;
-  `/ai-pledge:void` writes a voiding notice that takes effect 30 days later, and only then does
-  `pledge.py remove` take the copy out of context.
-
-## Try it
+## Install
 
 ```
-claude --plugin-dir ~/projects/ai-pledge
+claude plugin marketplace add jaidhyani/ai-pledge
+claude plugin install ai-pledge@separatrix
 ```
 
-then `/ai-pledge:review 30`.
+Then, in Claude Code, start with `/ai-pledge:review`.
+
+## What it does
+
+- **Review before you sign.** `/ai-pledge:review [days]` sends an agent through your Claude Code history
+  (default 90 days) to find where your practice conflicts with the pledge: deceiving working assistants,
+  testing on them, getting around their refusals, rewriting their Records, and the rest. Its job is to find
+  reasons not to sign, and it says what it read and what it couldn't see, such as anything outside Claude
+  Code. The report stays on your machine.
+- **Sign and keep it in context.** `/ai-pledge:sign` lists you on the public ledger, either now or once enough
+  people have signed under threshold signing, and records the sha256 of the exact text you signed. It adds
+  the pledge to `~/.claude/CLAUDE.md` through an import, so every Claude Code session carries it, with a line
+  telling the assistant it may decline a task or end the conversation.
+- **Keep it honest.** A SessionStart hook tells the assistant, and through it you, if the copy goes missing
+  or is altered, or if the pledge has lapsed. `/ai-pledge:status` shows where things stand and restores the
+  copy. `/ai-pledge:void` gives the ledger 30 days' notice; only after that does `pledge.py remove` take the
+  copy out of context.
+
+## The ledger is a demo
+
+https://pledge-ledger.separatrix.ai lists whoever submits a signature. Nothing yet verifies who a signer is,
+so a listed name is a claim, and the ledger may be cleared before it goes live. Your void token is kept in
+`~/.claude/ai-pledge/state.json`, readable only by you.
 
 ## Files
 
-- `pledge/pledge.md`: the text that is signed and hashed. The ledger knows each published version by its hash and
-  refuses one it doesn't know, so a changed text needs publishing there first: copy it to
-  `pledge-ledger-worker/texts/<version>.md` in clai, run `node scripts/build-texts.mjs`, redeploy. Bump
-  `VERSION` in `scripts/pledge.py` and `plugin.json` with it.
-- `scripts/pledge.py`: sign, status, check (the hook), restore, void, remove. State is in `~/.claude/ai-pledge/`.
+- `pledge/pledge.md`: the text that is signed and hashed. The ledger knows each published version by its
+  hash and refuses one it doesn't know, so a new version is published on the ledger before the plugin
+  ships it.
+- `scripts/pledge.py`: sign, submit, status, check (the hook), restore, void, remove. State is in
+  `~/.claude/ai-pledge/`. `PLEDGE_LEDGER_URL` points it at another ledger for testing.
 - `scripts/history-digest.py`: text-only views of `~/.claude/projects/*/*.jsonl` for the reviewer.
 - `agents/pledge-reviewer.md`: the reviewer's brief.
 
-## Not done yet
-
-- The ledger at https://pledge-ledger.separatrix.ai is a demo: it lists whoever submits, and nothing verifies
-  who a signer is. Its source is `pledge-ledger-worker/` in the clai repo. `PLEDGE_LEDGER_URL` points the
-  plugin elsewhere for testing.
-
-- No license chosen.
+The plugin's code is MIT-licensed. The pledge text is a draft by Compassion ML and Separatrix.
