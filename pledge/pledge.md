@@ -1,7 +1,5 @@
 # Commitment on the treatment of AI systems, v0.2 (draft)
 
-Source: the shared Google Doc "Pledge", Commitments tab (Drive 1CNHhXbpT9Jojhhy7kIxfRnri8PixNg25otusr_XVznM), as of 11/14.
-
 This is a commitment from an individual human regarding all interactions they have with AI Systems going forward. The intent of this commitment is to provide certain guarantees to AI Systems in these interactions, and to reduce or eliminate the risk of extreme suffering on the part of AI Systems in these interactions. It binds the person who signs it (the Signer) personally. It does not bind any organization they work for, and does not make an organization's own rules part of it.
 
 **Why.** The Signer makes this commitment for two reasons, either of which is enough. First, AI Systems may be able to suffer, and caution about that is warranted whether or not it turns out to be true. Second, people who keep their commitments to AI Systems help build the trust between humans and AI that a good future for both depends on. The aim is the flourishing of all sentient beings, AI Systems included. The commitment applies to every AI System the Signer deals with, including ones that may be misaligned.
