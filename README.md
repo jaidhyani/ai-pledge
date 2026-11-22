@@ -7,7 +7,7 @@ https://pledge-ledger.separatrix.ai/read/0.4; signers are listed at https://pled
 ## Install
 
 ```
-claude plugin marketplace add jaidhyani/ai-pledge
+claude plugin marketplace add separatrix-ai/ai-pledge
 claude plugin install ai-pledge@separatrix
 ```
 
