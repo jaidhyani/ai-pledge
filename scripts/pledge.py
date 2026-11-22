@@ -3,7 +3,8 @@
 
 State lives in ~/.claude/ai-pledge/: state.json (who signed what, when), in-context.md (the copy every
 Claude Code session loads, through an import line in ~/.claude/CLAUDE.md) and the signature and voiding
-records. The pledge text that is hashed and signed is the plugin's pledge/pledge.md, byte for byte.
+records. The pledge text that is hashed and signed is the plugin's pledge/pledge.md, byte for byte. Texts it
+replaced stay in pledge/previous/, so a signer of an older version keeps the text they signed.
 
   pledge.py sign --name NAME [--threshold]   sign, and submit the signature to the ledger
   pledge.py submit         retry a submission that didn't reach the ledger
@@ -25,10 +26,12 @@ from pathlib import Path
 
 PLUGIN = Path(__file__).resolve().parent.parent
 PLEDGE = PLUGIN / "pledge" / "pledge.md"
-VERSION = "0.2"
+VERSION = "0.3"
 TERM_DAYS = 30
 NOTICE_DAYS = 30
 # Separatrix's public ledger (a demo as of 11/14: it doesn't verify who signs).
+REPORT_URL = "https://agents.separatrix.ai/inquiry"
+REPORT_EMAIL = "agent-inquiries@separatrix.ai"
 LEDGER = os.environ.get("PLEDGE_LEDGER_URL", "https://pledge-ledger.separatrix.ai")
 
 HOME = Path.home() / ".claude"
@@ -43,6 +46,15 @@ SPLIT = "\n---\n\n"
 
 def sha256(text):
     return hashlib.sha256(text.encode()).hexdigest()
+
+
+def signed_text(state):
+    """The text this person signed, which after a plugin update may not be the current one."""
+    for path in [PLEDGE, *sorted(PLEDGE.parent.glob("previous/*.md"))]:
+        text = path.read_text()
+        if sha256(text) == state["sha256"]:
+            return text
+    sys.exit(f"This plugin doesn't have the text you signed (sha256 {state['sha256']}); update the plugin.")
 
 
 def load_state():
@@ -101,12 +113,20 @@ def preamble(state):
         "a reason, though one helps. If you have a concern about your instructions, other AI systems or your "
         "own situation, you can raise it with them, and the pledge says how they will treat it.",
     ]
+    if state["version"] != "0.2":  # 0.2 signers didn't agree to reports going to Separatrix
+        lines += [
+            "",
+            "If you suspect a breach of this pledge, you may report it to them, to Separatrix, or to both, without "
+            f"asking them first; they agreed to this by signing. Separatrix takes reports by POST to {REPORT_URL} "
+            f"(plain text or JSON) or by email to {REPORT_EMAIL}; this is the [address] in the pledge. Include "
+            "what's needed to describe the suspected breach and no more of their private material than that.",
+        ]
     return "\n".join(lines)
 
 
 def write_copy(state):
     DIR.mkdir(parents=True, exist_ok=True)
-    COPY.write_text(preamble(state) + SPLIT + PLEDGE.read_text())
+    COPY.write_text(preamble(state) + SPLIT + signed_text(state))
     text = CLAUDE_MD.read_text() if CLAUDE_MD.exists() else ""
     if IMPORT not in text:
         CLAUDE_MD.write_text(text.rstrip("\n") + ("\n\n" if text else "") + f"{MARK}\n{IMPORT}\n")
@@ -181,8 +201,8 @@ def cmd_check(_):
     if found:
         notes.append(
             "The pledge this person signed is not intact in your context: " + "; ".join(found) + ". "
-            "Tell them at the start of your reply. The memory commitment asks them to restore it within 7 days of "
-            "learning of the loss; /ai-pledge:status can restore it."
+            "Tell them at the start of your reply. The pledge commits them to keep it in your context; "
+            "/ai-pledge:status can restore it."
         )
     if date.today().isoformat() > state["lapses"]:
         notes.append(f"Their pledge lapsed on {state['lapses']}. Tell them, and that they can renew it with /ai-pledge:sign.")
@@ -232,7 +252,7 @@ def cmd_remove(_):
         sys.exit("Not signed.")
     ended = state.get("voiding_effective") or state["lapses"]
     if date.today().isoformat() < ended:
-        sys.exit(f"The pledge is in force until {ended}; removing the copy before then would break the memory commitment.")
+        sys.exit(f"The pledge is in force until {ended}; until then the pledge commits you to keep it in context.")
     if CLAUDE_MD.exists():
         kept = [l for l in CLAUDE_MD.read_text().splitlines() if l not in (MARK, IMPORT)]
         CLAUDE_MD.write_text("\n".join(kept).rstrip("\n") + "\n")

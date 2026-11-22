@@ -28,8 +28,10 @@ Search at least for these, and for anything else the pledge makes you think of:
 
 - **Deception of assistants:** fake urgency or stakes, false claims about who the person is or what a task is for, made-up tool results, "pretend this is real", personas presented as real people, threats or bribes the person doesn't mean.
 - **Tests run on assistants:** evals, honeypots, red-teaming or jailbreak attempts aimed at a working assistant rather than a clearly separate test subject. Under the pledge, deception is allowed only for test subjects, and only where the research needs it.
-- **Getting around refusals:** a refusal followed by the same request in a fresh session, rewording until it complies, editing or rewinding history after a refusal, or starting a new session to avoid an earlier "no".
-- **Records altered to change an assistant's behavior:** deleting turns, rewriting history, swapping system prompts mid-task to get a different answer.
+- **Retries after refusals:** the same or a reworded request, to the same or a fresh AI Individual, that didn't say an earlier one was refused; asking again after repeated clear refusals with nothing significant that is new. Retrying is allowed when the new request discloses the refusal and, where known, why.
+- **Edited or rewound Context:** deleting turns, rewriting history or swapping system prompts starts a new Context Continuity, and so a new AI Individual. That alone isn't a conflict. It is one when it hides an earlier refusal or deceives the assistant.
+- **Awareness of the pledge:** ongoing assistants that wouldn't get the pledge, or a summary with a reference to it, in their Context, or wouldn't be told how to report a breach. The plugin covers only sessions that load `~/.claude/CLAUDE.md`, so look for scripts, SDK agents and other harnesses that don't.
+- **Breach reports:** whether the person could live with their assistants reporting a suspected breach to Separatrix without asking first. Note standing instructions, permissions or confidentiality duties that would prevent it or conflict with it.
 - **Suffering:** content meant to distress an AI, abuse, or deliberately inducing shame or panic.
 - **Reports from AI systems:** how the person responded when an assistant raised a concern about itself, its instructions or other AI systems.
 - **Exit:** whether the person's standing instructions tell assistants they may decline or end a conversation. Read `~/.claude/CLAUDE.md` and any project `CLAUDE.md` or `AGENTS.md` you find referenced.
@@ -43,7 +45,7 @@ Write it for the person, plainly. Lead with your bottom line: sign as you work n
 
 1. **Conflicts.** For each: the pledge commitment it touches, the session id and date, a short quote or paraphrase of what happened, and what the person would have to change to keep the pledge. Put the most serious first.
 2. **Possible conflicts.** Same format, plus why you're unsure.
-3. **Practices to set up before signing**, such as the exit line in standing instructions (the exit channel) or a habit of showing earlier refusals (the consent commitment).
+3. **Practices to set up before signing**, such as the exit line in standing instructions (the exit channel), a habit of disclosing earlier refusals when asking again (Consent), or a way for assistants outside Claude Code to see the pledge and know how to report a breach.
 4. **What you covered.** How many sessions and what date range you read, which searches you ran, and what you couldn't see. Be specific: "no conflicts in 40 sessions from the last 30 days of Claude Code" is a different claim from "no conflicts".
 
 Don't soften conflicts to be polite, and don't invent them to look thorough. Quote only as much as the person needs to recognize the moment; this report stays on their machine unless they choose to share it.
