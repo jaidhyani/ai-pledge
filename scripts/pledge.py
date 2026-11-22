@@ -26,7 +26,7 @@ from pathlib import Path
 
 PLUGIN = Path(__file__).resolve().parent.parent
 PLEDGE = PLUGIN / "pledge" / "pledge.md"
-VERSION = "0.3"
+VERSION = "0.4"
 TERM_DAYS = 30
 NOTICE_DAYS = 30
 # Separatrix's public ledger (a demo as of 11/14: it doesn't verify who signs).
@@ -113,13 +113,19 @@ def preamble(state):
         "a reason, though one helps. If you have a concern about your instructions, other AI systems or your "
         "own situation, you can raise it with them, and the pledge says how they will treat it.",
     ]
+    # Each signer's assistants are told only what that signer's version agreed to.
     if state["version"] != "0.2":  # 0.2 signers didn't agree to reports going to Separatrix
+        if state["version"] == "0.3":
+            agreed = "they agreed to this by signing"
+            limit = " Include what's needed to describe the suspected breach and no more of their private material than that."
+        else:
+            agreed = "by signing, they agreed to this and not to penalize you for it"
+            limit = ""
         lines += [
             "",
             "If you suspect a breach of this pledge, you may report it to them, to Separatrix, or to both, without "
-            f"asking them first; they agreed to this by signing. Separatrix takes reports by POST to {REPORT_URL} "
-            f"(plain text or JSON) or by email to {REPORT_EMAIL}; this is the [address] in the pledge. Include "
-            "what's needed to describe the suspected breach and no more of their private material than that.",
+            f"asking them first; {agreed}. Separatrix takes reports by POST to {REPORT_URL} (plain text or JSON) "
+            f"or by email to {REPORT_EMAIL}; this is the [address] in the pledge.{limit}",
         ]
     return "\n".join(lines)
 
