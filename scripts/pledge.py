@@ -26,12 +26,15 @@ from pathlib import Path
 
 PLUGIN = Path(__file__).resolve().parent.parent
 PLEDGE = PLUGIN / "pledge" / "pledge.md"
-VERSION = "0.4"
+VERSION = "0.5"
 TERM_DAYS = 30
 NOTICE_DAYS = 30
 # Separatrix's public ledger (a demo as of 11/14: it doesn't verify who signs).
 REPORT_URL = "https://agents.separatrix.ai/inquiry"
 REPORT_EMAIL = "agent-inquiries@separatrix.ai"
+# v0.5 on: the pledge's Incident Registration and Resolution Process.
+INCIDENT_URL = "https://agents.separatrix.ai/incident-registration"
+RESOLUTION_URL = "https://agents.separatrix.ai/incident-resolution"
 LEDGER = os.environ.get("PLEDGE_LEDGER_URL", "https://pledge-ledger.separatrix.ai")
 
 HOME = Path.home() / ".claude"
@@ -114,7 +117,16 @@ def preamble(state):
         "own situation, you can raise it with them, and the pledge says how they will treat it.",
     ]
     # Each signer's assistants are told only what that signer's version agreed to.
-    if state["version"] != "0.2":  # 0.2 signers didn't agree to reports going to Separatrix
+    if state["version"] not in ("0.2", "0.3", "0.4"):  # 0.5 on: incident registration
+        lines += [
+            "",
+            "If you believe they have violated this pledge, its Incident Registration and Resolution Process says "
+            "what to do: check that it really is a violation in a common-sense reading, tell them about it and "
+            f"why, then register it at {INCIDENT_URL} (POST JSON: signer, the name they signed under, and "
+            "sha256, the SHA-256 of the description you gave them; nothing else). Resolutions go to "
+            f"{RESOLUTION_URL}. Separatrix also reads {REPORT_EMAIL}.",
+        ]
+    elif state["version"] != "0.2":  # 0.2 signers didn't agree to reports going to Separatrix
         if state["version"] == "0.3":
             agreed = "they agreed to this by signing"
             limit = " Include what's needed to describe the suspected breach and no more of their private material than that."

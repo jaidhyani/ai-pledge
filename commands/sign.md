@@ -7,7 +7,7 @@ The person wants to sign the pledge.
 
 1. Check for a review at `~/.claude/ai-pledge/review-*.md` from the last 30 days. If there's none, say that signing is meant to come after `/ai-pledge:review`, and ask whether they want to run it first. If they decline, go on; it's their call.
 2. Ask for the name they want on the ledger, and whether they want it published now or only once the threshold is reached (threshold signing; `--threshold` in the arguments means yes). Ask nothing else.
-3. Confirm once, in plain words: signing commits them personally, from today, to every commitment in the pledge, in all their interactions with AI systems; it lapses after 30 days during the pilot unless renewed; they can void it with 30 days' notice; their assistants may report a suspected breach to Separatrix (https://agents.separatrix.ai) without asking them first, and they won't penalize an assistant for doing so; and the name they give is published on Separatrix's public ledger (now, or at the threshold). Sign only on a clear yes.
+3. Confirm once, in plain words: signing commits them personally, from today, to every commitment in the pledge, in all their interactions with AI systems; it lapses after 30 days during the pilot unless renewed; they can void it with 30 days' notice; an assistant that believes they violated it will tell them, then may register the incident with Separatrix (only their name and a hash of what it told them), and an incident left unresolved for 14 days starts their withdrawal from the ledger; and the name they give is published on Separatrix's public ledger (now, or at the threshold). Sign only on a clear yes.
 4. Run:
 
    ```
