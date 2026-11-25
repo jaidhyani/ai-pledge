@@ -24,6 +24,8 @@ Updating doesn't change what you signed. A signer of an earlier version keeps th
 
 ## What it does
 
+- **Choose your version.** `/ai-pledge:versions` lists every version with a link to read it and a link to what
+  changed from the one before; `/ai-pledge:sign` asks which one to sign and suggests the newest.
 - **Review before you sign.** `/ai-pledge:review [days]` sends an agent through your Claude Code history
   (default 90 days) to find where your practice conflicts with the pledge: deceiving working assistants,
   testing on them, retrying without disclosing their refusals, leaving them unaware of the pledge, and the
@@ -62,7 +64,7 @@ registered). It's never shown publicly, and it's deleted when your signature lap
 withdrawn. Signing a newer version with the token of a confirmed signature carries the confirmation over, and
 confirming a newer signature from the same address marks your earlier one upgraded.
 
-Plugin versions are separate from pledge versions. This release, plugin 1.1.0, signs pledge v0.6
+Plugin versions are separate from pledge versions. Plugin 1.2.0 carries every published version (v0.2 to v0.6) and lets you choose which to sign, suggesting the newest, v0.6
 (`VERSION` in `scripts/pledge.py`).
 
 Your void token is also kept in `~/.claude/ai-pledge/state.json`, readable only by you.

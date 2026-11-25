@@ -6,7 +6,8 @@ Claude Code session loads, through an import line in ~/.claude/CLAUDE.md) and th
 records. The pledge text that is hashed and signed is the plugin's pledge/pledge.md, byte for byte. Texts it
 replaced stay in pledge/previous/, so a signer of an older version keeps the text they signed.
 
-  pledge.py sign --name NAME --email ADDR [--threshold]
+  pledge.py versions [--json]  the versions you can sign, newest first, with links to read each and see what changed
+  pledge.py sign --name NAME --email ADDR [--version V] [--threshold]   (V defaults to the newest)
                            sign, and submit the signature to the ledger (the ledger mails ADDR a link
                            that lists the signature once followed)
   pledge.py submit         retry a submission that didn't reach the ledger
@@ -30,7 +31,7 @@ from pathlib import Path
 
 PLUGIN = Path(__file__).resolve().parent.parent
 PLEDGE = PLUGIN / "pledge" / "pledge.md"
-VERSION = "0.6"
+VERSION = "0.6"   # the newest text this plugin carries, and the suggested default; every bundled version can be signed
 TERM_DAYS = 30
 NOTICE_DAYS = 30
 # Separatrix's public ledger. Since 11/25 a signature needs an email address, and it is listed only once someone
@@ -55,6 +56,22 @@ CLAUDE_MD = HOME / "CLAUDE.md"
 IMPORT = "@~/.claude/ai-pledge/in-context.md"
 MARK = "<!-- ai-pledge: the pledge this person signed; removing this line breaks the memory commitment -->"
 SPLIT = "\n---\n\n"
+
+
+def vkey(v):
+    major, minor = v.split(".")
+    return int(major), int(minor)
+
+
+def texts():
+    """Every pledge version this plugin carries, oldest first: {version: path}. Each is the exact published text."""
+    out = {p.stem: p for p in PLEDGE.parent.glob("previous/*.md")}
+    out[VERSION] = PLEDGE
+    return dict(sorted(out.items(), key=lambda kv: vkey(kv[0])))
+
+
+def read_url(version, compare=None):
+    return f"{LEDGER}/read/{version}" + (f"?compare={compare}" if compare else "")
 
 
 def sha256(text):
@@ -203,13 +220,41 @@ def problems(state):
     return found
 
 
+def cmd_versions(args):
+    """The versions to choose from, newest first, each with a link to read it and to see what changed."""
+    state = load_state()
+    vs = list(texts())
+    rows = []
+    for i, v in reversed(list(enumerate(vs))):
+        rows.append({
+            "version": v,
+            "suggested": v == VERSION,
+            "signed_by_you": bool(state and state.get("version") == v),
+            "read": read_url(v),
+            "changes": read_url(v, vs[i - 1]) if i else None,
+            "sha256": sha256(texts()[v].read_text()),
+        })
+    if args.json:
+        print(json.dumps(rows, indent=2))
+        return
+    for r in rows:
+        tags = [t for t, on in (("latest, suggested", r["suggested"]), ("the one you signed", r["signed_by_you"])) if on]
+        print(f"v{r['version']}{' (' + '; '.join(tags) + ')' if tags else ''}")
+        print(f"  read:    {r['read']}")
+        if r["changes"]:
+            print(f"  changes: {r['changes']}")
+
+
 def cmd_sign(args):
-    text = PLEDGE.read_text()
+    version = args.version or VERSION
+    if version not in texts():
+        sys.exit(f"This plugin doesn't carry v{version}. Versions: {', '.join(texts())} (`pledge.py versions` lists them).")
+    text = texts()[version].read_text()
     today = date.today()
     prev = load_state()
     state = {
         "name": args.name,
-        "version": VERSION,
+        "version": version,
         "sha256": sha256(text),
         "signed": today.isoformat(),
         "lapses": (today + timedelta(days=TERM_DAYS)).isoformat(),
@@ -221,13 +266,14 @@ def cmd_sign(args):
         sys.exit("Signing needs --email: an address you control. The ledger lists the signature once you confirm "
                  "from it, and keeps the address private.")
     # Signing a newer version upgrades the signature on the ledger, so the older one shows as upgraded, not lapsed.
-    if prev and prev.get("ledger_id") and prev.get("void_token") and prev.get("sha256") != state["sha256"]:
+    if (prev and prev.get("ledger_id") and prev.get("void_token") and prev.get("sha256") != state["sha256"]
+            and vkey(version) > vkey(prev["version"])):
         state["upgrades"] = {"id": prev["ledger_id"], "token": prev["void_token"], "version": prev["version"]}
     save_state(state)
     write_copy(state)
     listing = "published only once the threshold is reached" if args.threshold else "published now"
     record = (
-        f"I, {args.name}, sign the Pledge on the treatment of AI systems, version {VERSION}, "
+        f"I, {args.name}, sign the Pledge on the treatment of AI systems, version {version}, "
         f"sha256 {state['sha256']}, on {state['signed']}. Name on the ledger: {listing}."
     )
     path = DIR / f"signature-{state['signed']}.txt"
@@ -358,6 +404,8 @@ def main():
     s.add_argument("--email", help="an address you control (required, unless this upgrades a confirmed signature): "
                    "the ledger mails it a confirmation link and your void token, and keeps it private")
     s.add_argument("--threshold", action="store_true")
+    s.add_argument("--version", help=f"which pledge version to sign (default: the newest, v{VERSION}); `versions` lists them")
+    sub.add_parser("versions").add_argument("--json", action="store_true")
     sub.add_parser("report").add_argument("--file", required=True, help="a text file with what happened")
     for name in ("submit", "status", "check", "restore", "void", "remove"):
         sub.add_parser(name)
