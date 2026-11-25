@@ -10,6 +10,8 @@ replaced stay in pledge/previous/, so a signer of an older version keeps the tex
                            sign, and submit the signature to the ledger (the ledger mails ADDR a link
                            that lists the signature once followed)
   pledge.py submit         retry a submission that didn't reach the ledger
+  pledge.py report --file F   v0.6: report your own violation (within 30 days of learning of it); published after
+                           Separatrix reviews it
   pledge.py status
   pledge.py check          SessionStart hook: JSON for Claude Code, silent when all is well
   pledge.py restore        rewrite a missing or altered copy
@@ -245,6 +247,17 @@ def cmd_submit(_):
     submit(state)
 
 
+def cmd_report(args):
+    state = load_state()
+    if not state or not state.get("ledger_id"):
+        sys.exit("No signature on the ledger to report under.")
+    description = Path(args.file).read_text().strip()
+    r = post("/api/self-report", {"id": state["ledger_id"], "token": state["void_token"], "description": description})
+    if not r:
+        sys.exit("The report didn't reach the ledger; nothing was sent. Try again, or email " + REPORT_EMAIL + ".")
+    print(f"Self-report {r['id']} sent. {r['review']}")
+
+
 def cmd_status(_):
     state = load_state()
     if not state:
@@ -345,6 +358,7 @@ def main():
     s.add_argument("--email", help="an address you control (required, unless this upgrades a confirmed signature): "
                    "the ledger mails it a confirmation link and your void token, and keeps it private")
     s.add_argument("--threshold", action="store_true")
+    sub.add_parser("report").add_argument("--file", required=True, help="a text file with what happened")
     for name in ("submit", "status", "check", "restore", "void", "remove"):
         sub.add_parser(name)
     args = p.parse_args()

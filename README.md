@@ -43,6 +43,8 @@ Updating doesn't change what you signed. A signer of an earlier version keeps th
 - **Upgrade in place.** When a new version comes out, `/ai-pledge:sign` with the updated plugin signs it and
   tells the ledger which earlier signature it replaces (using the token saved when you signed). The ledger
   then shows the old one as upgraded, linked to the new one, so it never shows as lapsed.
+- **Report your own violations (v0.6).** `/ai-pledge:report` sends your account of a violation you learned of
+  (the pledge asks for it within 30 days). Separatrix reviews it, then it's published beside your signature.
 - **Keep it honest.** A SessionStart hook tells the assistant, and through it you, if the copy goes missing
   or is altered, or if the pledge has lapsed. `/ai-pledge:status` shows where things stand and restores the
   copy. `/ai-pledge:void` gives the ledger 30 days' notice; only after that does `pledge.py remove` take the
