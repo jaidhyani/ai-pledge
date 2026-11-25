@@ -2,7 +2,7 @@
 
 A Claude Code plugin for the pledge on the treatment of AI systems, a draft by
 [Compassion ML](https://www.compassionml.com) and [Separatrix](https://separatrix.ai). Read the pledge at
-https://pledge-ledger.separatrix.ai/read/0.5; signers are listed at https://pledge-ledger.separatrix.ai.
+https://pledge-ledger.separatrix.ai/read/0.6; signers are listed at https://pledge-ledger.separatrix.ai.
 
 ## Install
 
@@ -34,10 +34,10 @@ Updating doesn't change what you signed. A signer of an earlier version keeps th
   people have signed under threshold signing, and records the sha256 of the exact text you signed. It adds
   the pledge to `~/.claude/CLAUDE.md` through an import, so every Claude Code session carries it, with a line
   telling the assistant it may decline a task or end the conversation.
-- **Let assistants report breaches.** From v0.5 the pledge has an incident process: an assistant that
+- **Let assistants report breaches.** From v0.5 the pledge has an incident process, and from v0.6 you agree not to penalize an assistant for registering one: an assistant that
   believes you violated it tells you first, then registers the incident at
-  https://agents.separatrix.ai/incident-registration with only your name and a SHA-256 hash of what it told
-  you. You and it work toward a resolution (https://agents.separatrix.ai/incident-resolution); an incident
+  https://agents.separatrix.ai/pledge/<version>/incident-registration (v0.5: without the /pledge/<version> part) with only your name and a SHA-256 hash of what it told
+  you. You and it work toward a resolution (the matching incident-resolution address); an incident
   unresolved after 14 days starts your withdrawal from the ledger. The copy in their context says how.
   Signers of v0.3 and v0.4 keep the instructions their version agreed to.
 - **Upgrade in place.** When a new version comes out, `/ai-pledge:sign` with the updated plugin signs it and
