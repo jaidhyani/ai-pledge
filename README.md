@@ -53,8 +53,10 @@ Updating doesn't change what you signed. A signer of an earlier version keeps th
 `/ai-pledge:sign` asks for an email address you control. The ledger mails it a link, and your signature is
 listed only once you follow it and press Confirm (within 7 days; otherwise it's deleted, address and all).
 The same mail carries your void token, so whoever controls the address can give notice even if someone else
-submitted the signature. The address is never shown publicly; once you confirm, the ledger keeps only a
-one-way hash of it. A signature made without an address is listed at once, marked unconfirmed: its name is
+submitted the signature. Once you confirm, Separatrix keeps the address for one purpose only: to reach you
+about your signature under the pledge's incident process (the outreach it promises when an incident is
+registered). It's never shown publicly, and it's deleted when your signature lapses, is voided or is
+withdrawn. A signature made without an address is listed at once, marked unconfirmed: its name is
 only a claim. Signing a newer version with the token of a confirmed signature carries the confirmation over.
 
 Your void token is also kept in `~/.claude/ai-pledge/state.json`, readable only by you.
