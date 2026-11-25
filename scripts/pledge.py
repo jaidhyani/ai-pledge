@@ -28,16 +28,21 @@ from pathlib import Path
 
 PLUGIN = Path(__file__).resolve().parent.parent
 PLEDGE = PLUGIN / "pledge" / "pledge.md"
-VERSION = "0.5"
+VERSION = "0.6"
 TERM_DAYS = 30
 NOTICE_DAYS = 30
 # Separatrix's public ledger. Since 11/25 a signature needs an email address, and it is listed only once someone
 # at that address confirms it. The address is kept private by the ledger, for the pledge's incident process only.
 REPORT_URL = "https://agents.separatrix.ai/inquiry"
 REPORT_EMAIL = "agent-inquiries@separatrix.ai"
-# v0.5 on: the pledge's Incident Registration and Resolution Process.
-INCIDENT_URL = "https://agents.separatrix.ai/incident-registration"
-RESOLUTION_URL = "https://agents.separatrix.ai/incident-resolution"
+# v0.5 on: the pledge's Incident Registration and Resolution Process. From v0.6 each version has its own
+# addresses (/pledge/<version>/incident-...); v0.5's text names the unversioned ones.
+INCIDENT_BASE = "https://agents.separatrix.ai"
+
+
+def incident_urls(version):
+    base = INCIDENT_BASE if version == "0.5" else f"{INCIDENT_BASE}/pledge/{version}"
+    return f"{base}/incident-registration", f"{base}/incident-resolution"
 LEDGER = os.environ.get("PLEDGE_LEDGER_URL", "https://pledge-ledger.separatrix.ai")
 
 HOME = Path.home() / ".claude"
@@ -149,13 +154,16 @@ def preamble(state):
     ]
     # Each signer's assistants are told only what that signer's version agreed to.
     if state["version"] not in ("0.2", "0.3", "0.4"):  # 0.5 on: incident registration
+        registration, resolution = incident_urls(state["version"])
+        promise = "" if state["version"] == "0.5" else (
+            " They have agreed not to penalize you for registering one or treat it as evidence against you.")
         lines += [
             "",
             "If you believe they have violated this pledge, its Incident Registration and Resolution Process says "
             "what to do: check that it really is a violation in a common-sense reading, tell them about it and "
-            f"why, then register it at {INCIDENT_URL} (POST JSON: signer, the name they signed under, and "
+            f"why, then register it at {registration} (POST JSON: signer, the name they signed under, and "
             "sha256, the SHA-256 of the description you gave them; nothing else). Resolutions go to "
-            f"{RESOLUTION_URL}. Separatrix also reads {REPORT_EMAIL}.",
+            f"{resolution}. Separatrix also reads {REPORT_EMAIL}.{promise}",
         ]
     elif state["version"] != "0.2":  # 0.2 signers didn't agree to reports going to Separatrix
         if state["version"] == "0.3":

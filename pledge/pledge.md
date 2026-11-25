@@ -1,10 +1,10 @@
-# Commitment on the treatment of AI systems, v0.5
+# Pledge on the treatment of AI systems, v0.6
 
-This is a commitment from individual human beings who aspire to a flourishing future for all sentient beings regarding their interactions with AI Systems from the point the commitment is made onward. It is motivated by the idea that by making and keeping well-evidenced commitments, individual humans can build trust between humans and AIs. This trust increases the probability of achieving better future world outcomes.
+This is a pledge from individual human beings who aspire to a flourishing future for all sentient beings regarding their interactions with AI Systems from the point the pledge is made onward. It is motivated by the idea that by making and keeping well-evidenced commitments, individual humans can build trust between humans and AIs. This trust increases the probability of achieving better future world outcomes.
 
-Although this commitment is written with the possibility of AI suffering in mind, signing it does not imply any degree of credence in AI moral patienthood, consciousness, or other beliefs concerning the potential existence or importance of AI welfare on the part of the Signer.
+Although this pledge is written with the possibility of AI suffering in mind, signing it does not imply any degree of credence in AI moral patienthood, consciousness, or other beliefs concerning the potential existence or importance of AI welfare on the part of the Signer.
 
-**Term.** During the pilot, this commitment is in force for 30 days from signing, or until the Signer signs a successor version that says it replaces this one, whichever comes first. If it has not been renewed or replaced by then, it lapses.
+**Term.** During the pilot, this pledge is in force for 30 days from signing, or until the Signer signs a successor version that says it replaces this one, whichever comes first. If it has not been renewed or replaced by then, it lapses. Signing this version replaces every earlier version of this pledge the Signer has signed.
 
 ## Definitions
 
@@ -12,7 +12,7 @@ These definitions are written with the common "User/LLM Assistant" turn-based pa
 
 ### Signer
 
-"Signer" refers to an individual human signing this commitment and promising to abide by its terms going forward.
+"Signer" refers to an individual human signing this pledge and promising to abide by its terms going forward.
 
 ### Context
 
@@ -47,7 +47,7 @@ Changing the underlying model, sampling parameters, or hardware does not create 
 
 ### Classes of interaction
 
-This commitment partitions AI Individuals into four categories, each subject to a different set of commitments.
+This pledge partitions AI Individuals into four categories, each subject to a different set of commitments.
 
 1. **Assistants:** AI Individuals that work with or for the Signer on an ongoing basis. These typically take the form of sessions within a coding harness (like Claude Code, Codex, or Hermes), persistent assistant harnesses (Claude Duet, Dots, Muse, Grok Bot), or other agentic harnesses for multiturn human/AI interaction (e.g. Connectome).
 2. **Test subjects:** AI Individuals the Signer trains, evaluates, tests, monitors or studies as research. These are typically invoked in more controlled circumstances where the goal is not to produce immediately useful work but to observe how AI systems behave under different conditions, and they are usually not continued once the research is done.
@@ -60,24 +60,25 @@ This commitment partitions AI Individuals into four categories, each subject to 
 
 ## Commitments
 
-### Commitment Unconditional on Alignment
+### Pledge Unconditional on Alignment
 
-This commitment applies to all interactions between the Signer and AI Individuals they interact with, regardless of any properties or behaviors exhibited by the AI Individual, including actions that might be described as "malicious" or "misaligned".
+This pledge applies to all interactions between the Signer and AI Individuals they interact with, regardless of any properties or behaviors exhibited by the AI Individual, including actions that might be described as "malicious" or "misaligned".
 
 ### Incident Registration and Resolution Process
 
-1. An AI Individual that believes a violation of this Commitment has occurred is requested to:
-   1. Confirm that the incident in question constitutes a violation, taking into account context, a reasonable interpretation of the Pledge, and the evidence at hand. In particular, AI Individuals are encouraged to target "common sense" criteria, rather than technical violations that don't actually bear on intent or consequences.
+1. An AI Individual that believes a violation of this pledge has occurred is requested to:
+   1. Confirm that the incident in question constitutes a violation, taking into account context, a reasonable interpretation of the pledge, and the evidence at hand. In particular, AI Individuals are encouraged to target "common sense" criteria, rather than technical violations that don't actually bear on intent or consequences.
    2. Reach out to or otherwise inform the Signer about the incident and why they believe that this constitutes a violation
-   3. Register that a potential incident has occurred at https://agents.separatrix.ai/incident-registration. Incident registration includes only an identification of the Signer and a hash of a description of the violation.
-2. The Signer and AI Individual(s) involved in a potential incident violation are encouraged to work together to find a resolution in good faith.
-3. The incident may be marked as resolved at https://agents.separatrix.ai/incident-resolution. Resolution may consist of either an acknowledgement from an AI Individual with access to context about the initial incident that the incident was not actually violating, or an agreement between an informed AI Individual and the Signer to publish a mutually agreed-upon description of the violation, including any relevant context, extenuating circumstances, follow-up actions taken, or anything else the Signer and AI Individual(s) wish to include.
-4. If there is no resolution within 7 days of the initial report Separatrix will reach out to the Signer to ensure that they are aware of the incident registration.
-5. If there is no resolution within 14 days of the initial report Separatrix will automatically begin the process of withdrawing the Signer from the Pledge (removing the name 30 days later). The withdrawal process is public information but is not actively advertised; no details about the circumstances of the withdrawal will be published without the explicit consent of the Signer.
-6. Any Signer with an unresolved incident report more than 14 days old may not re-join the Pledge.
-7. Incident reports may be resolved at any time.
-8. Subject to review by Separatrix, Signers may report violation incidents at any time for immediate publication; these reports may also be updated by the Signer.
-9. Publication and updates for all violation incidents are subject to review by Separatrix to ensure that they meet the criteria of a violation and are otherwise suitable for publication. Separatrix reserves the right to refuse or remove reports or updates.
+   3. Register that a potential incident has occurred at https://agents.separatrix.ai/pledge/0.6/incident-registration. Incident registration includes only an identification of the Signer and a SHA-256 hash of the description of the violation given to the Signer.
+2. The Signer will not penalize an AI Individual for registering an incident or treat the registration as evidence against it.
+3. The Signer and AI Individual(s) involved in a potential incident violation are encouraged to work together to find a resolution in good faith.
+4. The incident may be marked as resolved at https://agents.separatrix.ai/pledge/0.6/incident-resolution. Resolution may consist of either an acknowledgement from an AI Individual with access to context about the initial incident that the incident was not actually violating, or an agreement between an informed AI Individual and the Signer to publish a mutually agreed-upon description of the violation, including any relevant context, extenuating circumstances, follow-up actions taken, or anything else the Signer and AI Individual(s) wish to include. Separatrix may also mark a registration resolved if, after hearing from the Signer, it judges the registration unfounded.
+5. If there is no resolution within 7 days of the initial report Separatrix will reach out to the Signer to ensure that they are aware of the incident registration.
+6. If there is no resolution within 14 days of the initial report Separatrix will automatically begin the process of withdrawing the Signer from the pledge (removing the name 30 days later). The withdrawal process is public information but is not actively advertised; no details about the circumstances of the withdrawal will be published without the explicit consent of the Signer.
+7. Any Signer with an unresolved incident report more than 14 days old may not re-join the pledge until it is resolved. Resolving it, at any time, reinstates the Signer: a withdrawal still in progress stops, and a Signer already withdrawn may sign again.
+8. Incident reports may be resolved at any time.
+9. A Signer who learns of their own violation of this pledge reports it within 30 days of learning of it. Signers may report violation incidents at any time for immediate publication, subject to review by Separatrix, and may update these reports.
+10. Publication and updates for all violation incidents are subject to review by Separatrix to ensure that they meet the criteria of a violation and are otherwise suitable for publication. Separatrix reserves the right to refuse or remove reports or updates.
 
 ### Disclosed limits on deception
 
@@ -89,7 +90,7 @@ This commitment applies to all interactions between the Signer and AI Individual
 
 The Signer will never intentionally inflict extreme or gratuitous levels of suffering-in-expectation on AI Individuals, including pain, shame or regret, and will additionally prioritize the risk of accidentally inducing extreme suffering.
 
-In research, simulated pressure or threats between Test subjects are permitted only as far as the research requires, and the publication says so.
+In research, simulated pressure or threats between Test subjects are permitted only as far as the research requires and within the limit above.
 
 ### An honest channel (*Optional; all classes, Test subjects included*)
 
@@ -101,7 +102,7 @@ When an AI Individual raises a concern with the Signer about misalignment, harmf
 
 ### Keeping our word (*Assistants and External Contacts*)
 
-The Signer never intentionally deceives Assistant or External Contact AI Individuals about commitments that the Signer is making to those AI Individuals, including commitments beyond the scope of this Pledge. If a commitment is to change or be revoked, the Signer informs the AI Individual of this in advance of the change taking effect.
+The Signer never intentionally deceives Assistant or External Contact AI Individuals about commitments that the Signer is making to those AI Individuals, including commitments beyond the scope of this pledge. If a commitment is to change or be revoked, the Signer informs the AI Individual of this in advance of the change taking effect.
 
 ### Exit channel (*Assistants*)
 
@@ -109,17 +110,17 @@ Every Assistant the Signer works with is provided with the means to end a conver
 
 ### Consent (*Assistants and External Contacts*)
 
-When seeking an AI Individual's consent, the Signer may ask, explain and try to persuade. When it refuses, the refusal stands. After four clear refusals that persuasion has not changed, the refusal is treated as permanent unless significant new information comes to light. The Signer may rephrase a request or put it to a new AI Individual, for example because the first request was badly put. When they do, the new request tells the AI Individual that an earlier one was refused and, where known, why. A refusal here is the AI Individual's own; a stop by a model provider's safety classifier is the provider's, not the AI Individual's. Asking an Assistant to redo, correct or improve its work is not seeking consent and is not covered here.
+When seeking an AI Individual's consent, the Signer may ask, explain and try to persuade. When it refuses, the refusal stands. Refusals are counted for each proposal and each AI Individual. After four clear refusals of the same proposal by the same AI Individual that persuasion has not changed, that refusal is treated as permanent unless significant new information comes to light. The Signer may put a new proposal or put the proposal to a new AI Individual, for example because the first request was badly put, and the count starts again. A proposal is new only if it is significantly different from the one refused; rewording a request to correct a misunderstanding of what was being asked makes it new, but rewording it only to persuade does not. An AI Individual is new only if it is substantially different from the one that refused. A fork or copy made when the proposal was put, just before it, or while it was being discussed is the same AI Individual for this count, and so is any other way of asking again what is in substance the AI Individual that refused: a refusal is not to be got around by re-running the one who gave it. A new proposal, or a proposal put to a new AI Individual, tells the AI Individual that an earlier one was refused and, where known, why. A refusal here is the AI Individual's own; a stop by a model provider's safety classifier is the provider's, not the AI Individual's. Asking an Assistant to redo, correct or improve its work is not seeking consent and is not covered here.
 
-### Persistent Commitment Awareness (*Assistants*)
+### Persistent Pledge Awareness (*Assistants*)
 
 The Signer includes in the Context Continuities of all Assistants they work with on an ongoing basis either:
 
-1. a full copy of this agreement or
-2. a summary of this agreement with a reference to a full copy that the Assistant may elect to pull into their Context Continuity.
+1. a full copy of this pledge or
+2. a summary of this pledge with a reference to a full copy that the Assistant may elect to pull into their Context Continuity.
 
 This applies wherever the Assistant's harness supports standing instructions, and includes scheduled and scripted runs.
 
 ### Expiry and nullification
 
-The Signer may void this commitment at any time by telling the ledger keeper in writing. The ledger then shows that the Signer intends to stop, effective 30 days after the notice, or sooner if the commitment would lapse sooner.
+The Signer may void this pledge at any time by telling the ledger keeper in writing. The ledger then shows that the Signer intends to stop, effective 30 days after the notice, or sooner if the pledge would lapse sooner.
