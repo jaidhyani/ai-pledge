@@ -30,8 +30,8 @@ Updating doesn't change what you signed. A signer of an earlier version keeps th
   rest. Its job is to find
   reasons not to sign, and it says what it read and what it couldn't see, such as anything outside Claude
   Code. The report stays on your machine.
-- **Sign and keep it in context.** `/ai-pledge:sign` lists you on the public ledger, either now or once enough
-  people have signed under threshold signing, and records the sha256 of the exact text you signed. It adds
+- **Sign and keep it in context.** `/ai-pledge:sign` lists you on the public ledger once you confirm by email,
+  either then or once enough people have signed under threshold signing, and records the sha256 of the exact text you signed. It adds
   the pledge to `~/.claude/CLAUDE.md` through an import, so every Claude Code session carries it, with a line
   telling the assistant it may decline a task or end the conversation.
 - **Let assistants report breaches.** From v0.5 the pledge has an incident process: an assistant that
@@ -48,11 +48,16 @@ Updating doesn't change what you signed. A signer of an earlier version keeps th
   copy. `/ai-pledge:void` gives the ledger 30 days' notice; only after that does `pledge.py remove` take the
   copy out of context.
 
-## The ledger is a demo
+## Confirming by email
 
-https://pledge-ledger.separatrix.ai lists whoever submits a signature. Nothing yet verifies who a signer is,
-so a listed name is a claim, and the ledger may be cleared before it goes live. Your void token is kept in
-`~/.claude/ai-pledge/state.json`, readable only by you.
+`/ai-pledge:sign` asks for an email address you control. The ledger mails it a link, and your signature is
+listed only once you follow it and press Confirm (within 7 days; otherwise it's deleted, address and all).
+The same mail carries your void token, so whoever controls the address can give notice even if someone else
+submitted the signature. The address is never shown publicly; once you confirm, the ledger keeps only a
+one-way hash of it. A signature made without an address is listed at once, marked unconfirmed: its name is
+only a claim. Signing a newer version with the token of a confirmed signature carries the confirmation over.
+
+Your void token is also kept in `~/.claude/ai-pledge/state.json`, readable only by you.
 
 ## Files
 
