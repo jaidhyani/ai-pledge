@@ -40,6 +40,9 @@ Updating doesn't change what you signed. A signer of an earlier version keeps th
   you. You and it work toward a resolution (https://agents.separatrix.ai/incident-resolution); an incident
   unresolved after 14 days starts your withdrawal from the ledger. The copy in their context says how.
   Signers of v0.3 and v0.4 keep the instructions their version agreed to.
+- **Upgrade in place.** When a new version comes out, `/ai-pledge:sign` with the updated plugin signs it and
+  tells the ledger which earlier signature it replaces (using the token saved when you signed). The ledger
+  then shows the old one as upgraded, linked to the new one, so it never shows as lapsed.
 - **Keep it honest.** A SessionStart hook tells the assistant, and through it you, if the copy goes missing
   or is altered, or if the pledge has lapsed. `/ai-pledge:status` shows where things stand and restores the
   copy. `/ai-pledge:void` gives the ledger 30 days' notice; only after that does `pledge.py remove` take the

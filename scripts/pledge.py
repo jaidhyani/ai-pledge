@@ -90,11 +90,18 @@ def post(path, body):
 def submit(state):
     """Send a signature to the ledger and keep what it returns. The ledger's dates win, since its record is
     the public one."""
-    r = post("/api/sign", {k: state[k] for k in ("name", "sha256", "threshold")})
+    body = {k: state[k] for k in ("name", "sha256", "threshold")}
+    if state.get("upgrades"):  # an earlier signature this one replaces: the ledger marks it upgraded
+        body["upgrades"] = {"id": state["upgrades"]["id"], "token": state["upgrades"]["token"]}
+    r = post("/api/sign", body)
     if not r:
         print("Your signature is saved here but not on the ledger yet; run `pledge.py submit` to retry.")
         return False
     state.update(ledger_id=r["id"], void_token=r["token"], version=r["version"], signed=r["signed"], lapses=r["lapses"], ledger_url=r["url"])
+    if r.get("upgraded"):
+        state["upgraded_from"] = {"id": r["upgraded"]["id"], "version": r["upgraded"]["version"]}
+        state.pop("upgrades", None)  # the old token is spent; keep no copy
+        print(f"Your v{r['upgraded']['version']} signature is now marked as upgraded to v{r['version']}.")
     save_state(state)
     write_copy(state)
     print(f"Listed on the ledger as a signer of version {r['version']}: {r['url']}")
@@ -165,6 +172,7 @@ def problems(state):
 def cmd_sign(args):
     text = PLEDGE.read_text()
     today = date.today()
+    prev = load_state()
     state = {
         "name": args.name,
         "version": VERSION,
@@ -173,6 +181,9 @@ def cmd_sign(args):
         "lapses": (today + timedelta(days=TERM_DAYS)).isoformat(),
         "threshold": args.threshold,
     }
+    # Signing a newer version upgrades the signature on the ledger, so the older one shows as upgraded, not lapsed.
+    if prev and prev.get("ledger_id") and prev.get("void_token") and prev.get("sha256") != state["sha256"]:
+        state["upgrades"] = {"id": prev["ledger_id"], "token": prev["void_token"], "version": prev["version"]}
     save_state(state)
     write_copy(state)
     listing = "published only once the threshold is reached" if args.threshold else "published now"
