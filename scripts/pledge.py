@@ -6,7 +6,9 @@ Claude Code session loads, through an import line in ~/.claude/CLAUDE.md) and th
 records. The pledge text that is hashed and signed is the plugin's pledge/pledge.md, byte for byte. Texts it
 replaced stay in pledge/previous/, so a signer of an older version keeps the text they signed.
 
-  pledge.py sign --name NAME [--threshold]   sign, and submit the signature to the ledger
+  pledge.py sign --name NAME [--email ADDR] [--threshold]
+                           sign, and submit the signature to the ledger (the ledger mails ADDR a link
+                           that lists the signature once followed)
   pledge.py submit         retry a submission that didn't reach the ledger
   pledge.py status
   pledge.py check          SessionStart hook: JSON for Claude Code, silent when all is well
@@ -29,7 +31,8 @@ PLEDGE = PLUGIN / "pledge" / "pledge.md"
 VERSION = "0.6"
 TERM_DAYS = 30
 NOTICE_DAYS = 30
-# Separatrix's public ledger (a demo as of 11/14: it doesn't verify who signs).
+# Separatrix's public ledger. Since 11/25 a signature that gives an email address is listed once someone at that
+# address confirms it; one without is listed at once, marked unconfirmed.
 REPORT_URL = "https://agents.separatrix.ai/inquiry"
 REPORT_EMAIL = "agent-inquiries@separatrix.ai"
 # v0.5 on: the pledge's Incident Registration and Resolution Process. From v0.6 each version has its own
@@ -92,10 +95,21 @@ def post(path, body):
     return None
 
 
+def listed(state):
+    """Whether the ledger lists this signature yet (a pending one is listed once its email is confirmed)."""
+    try:
+        with urllib.request.urlopen(f"{LEDGER}/api/records", timeout=20) as r:
+            return any(s["id"] == state["ledger_id"] for s in json.loads(r.read())["signers"])
+    except (urllib.error.URLError, TimeoutError, OSError, ValueError, KeyError):
+        return None
+
+
 def submit(state):
     """Send a signature to the ledger and keep what it returns. The ledger's dates win, since its record is
     the public one."""
     body = {k: state[k] for k in ("name", "sha256", "threshold")}
+    if state.get("email"):
+        body["email"] = state["email"]
     if state.get("upgrades"):  # an earlier signature this one replaces: the ledger marks it upgraded
         body["upgrades"] = {"id": state["upgrades"]["id"], "token": state["upgrades"]["token"]}
     r = post("/api/sign", body)
@@ -103,13 +117,23 @@ def submit(state):
         print("Your signature is saved here but not on the ledger yet; run `pledge.py submit` to retry.")
         return False
     state.update(ledger_id=r["id"], void_token=r["token"], version=r["version"], signed=r["signed"], lapses=r["lapses"], ledger_url=r["url"])
+    state.pop("email", None)  # the ledger has it now; keep no copy here
+    confirm = r.get("confirmation") or {}
+    state["confirmation"] = confirm.get("status", "none")
     if r.get("upgraded"):
         state["upgraded_from"] = {"id": r["upgraded"]["id"], "version": r["upgraded"]["version"]}
         state.pop("upgrades", None)  # the old token is spent; keep no copy
         print(f"Your v{r['upgraded']['version']} signature is now marked as upgraded to v{r['version']}.")
     save_state(state)
     write_copy(state)
-    print(f"Listed on the ledger as a signer of version {r['version']}: {r['url']}")
+    if state["confirmation"] == "pending":
+        print(f"The ledger has mailed a confirmation link to the address you gave. Your v{r['version']} signature is "
+              f"listed once you follow it and press Confirm (within {confirm.get('days', 7)} days; until then it isn't "
+              f"shown){', and the earlier signature is marked upgraded then' if state.get('upgrades') else ''}. "
+              f"It will be at {r['url']}")
+    else:
+        note = " (email confirmed)" if state["confirmation"] == "confirmed" else " (unconfirmed: no email address was given)"
+        print(f"Listed on the ledger as a signer of version {r['version']}{note}: {r['url']}")
     return True
 
 
@@ -189,6 +213,8 @@ def cmd_sign(args):
         "lapses": (today + timedelta(days=TERM_DAYS)).isoformat(),
         "threshold": args.threshold,
     }
+    if args.email:
+        state["email"] = args.email.strip()
     # Signing a newer version upgrades the signature on the ledger, so the older one shows as upgraded, not lapsed.
     if prev and prev.get("ledger_id") and prev.get("void_token") and prev.get("sha256") != state["sha256"]:
         state["upgrades"] = {"id": prev["ledger_id"], "token": prev["void_token"], "version": prev["version"]}
@@ -224,7 +250,17 @@ def cmd_status(_):
     print(f"Signed by {state['name']} on {state['signed']} (v{state['version']}); lapses {state['lapses']}.")
     if state.get("voiding_effective"):
         print(f"Voiding takes effect {state['voiding_effective']}.")
-    print(f"On the ledger: {state['ledger_url']}" if state.get("ledger_id") else "Not on the ledger yet; `pledge.py submit` sends it.")
+    if not state.get("ledger_id"):
+        print("Not on the ledger yet; `pledge.py submit` sends it.")
+    elif state.get("confirmation") == "pending" and not listed(state):
+        print(f"Not listed until you follow the confirmation link the ledger mailed you (it expires 7 days after "
+              f"signing): {state['ledger_url']}")
+    else:
+        if state.get("confirmation") == "pending":
+            state["confirmation"] = "confirmed"
+            state.pop("upgrades", None)
+            save_state(state)
+        print(f"On the ledger: {state['ledger_url']}")
     found = problems(state)
     print("The in-context copy is intact." if not found else "Problem: " + "; ".join(found) + ".")
 
@@ -303,6 +339,7 @@ def main():
     sub = p.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("sign")
     s.add_argument("--name", required=True)
+    s.add_argument("--email", help="an address you control; the ledger mails it a confirmation link and your void token")
     s.add_argument("--threshold", action="store_true")
     for name in ("submit", "status", "check", "restore", "void", "remove"):
         sub.add_parser(name)
