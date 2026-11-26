@@ -81,3 +81,17 @@ Your void token is also kept in `~/.claude/ai-pledge/state.json`, readable only 
 - `agents/pledge-reviewer.md`: the reviewer's brief.
 
 The plugin's code is MIT-licensed. The pledge text is a draft by Compassion ML and Separatrix.
+## Updating
+
+Claude Code doesn't update plugins from this marketplace on its own unless you turn that on. To update now,
+in a session:
+
+```
+/plugin marketplace update separatrix
+/reload-plugins
+```
+
+or in a terminal: `claude plugin marketplace update separatrix && claude plugin update ai-pledge@separatrix`.
+To keep it current automatically: `/plugin` > Marketplaces > `separatrix` > turn on auto-update. If you have
+signed, the plugin also checks once a day and tells you when a newer version is out.
+

@@ -327,11 +327,47 @@ def cmd_status(_):
     print("The in-context copy is intact." if not found else "Problem: " + "; ".join(found) + ".")
 
 
+UPDATE_CHECK = DIR / "update-check.json"
+REMOTE_MANIFEST = "https://raw.githubusercontent.com/separatrix-ai/ai-pledge/HEAD/.claude-plugin/plugin.json"
+
+
+def plugin_version_key(v):
+    try:
+        return tuple(int(x) for x in str(v).split("."))
+    except ValueError:
+        return ()
+
+
+def newer_plugin():
+    """The newest published plugin version if it's newer than this one, else None. Asks GitHub at most once a day
+    and never holds up a session: any failure just means no note."""
+    try:
+        here = json.loads((PLUGIN / ".claude-plugin/plugin.json").read_text())["version"]
+        cached = json.loads(UPDATE_CHECK.read_text()) if UPDATE_CHECK.exists() else {}
+        if cached.get("day") == date.today().isoformat():
+            latest = cached.get("latest")
+        else:
+            req = urllib.request.Request(REMOTE_MANIFEST, headers={"User-Agent": "ai-pledge-plugin"})
+            with urllib.request.urlopen(req, timeout=3) as r:
+                latest = json.loads(r.read())["version"]
+            DIR.mkdir(parents=True, exist_ok=True)
+            UPDATE_CHECK.write_text(json.dumps({"day": date.today().isoformat(), "latest": latest}))
+        return latest if plugin_version_key(latest) > plugin_version_key(here) else None
+    except Exception:
+        return None
+
+
 def cmd_check(_):
     state = load_state()
     if not state or state.get("removed"):
         return
     notes = []
+    latest = newer_plugin()
+    if latest:
+        notes.append(
+            f"A newer version of the ai-pledge plugin ({latest}) is available. Tell the person once, briefly: to update, "
+            "run `/plugin marketplace update separatrix`, then `/reload-plugins` (or, in a terminal, "
+            "`claude plugin marketplace update separatrix && claude plugin update ai-pledge@separatrix`).")
     found = problems(state)
     if found:
         notes.append(
