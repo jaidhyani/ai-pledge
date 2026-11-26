@@ -7,7 +7,7 @@ records. The pledge text that is hashed and signed is the plugin's pledge/pledge
 replaced stay in pledge/previous/, so a signer of an older version keeps the text they signed.
 
   pledge.py versions [--json]  the versions you can sign, newest first, with links to read each and see what changed
-  pledge.py sign --name NAME --email ADDR [--version V] [--threshold]   (V defaults to the newest)
+  pledge.py sign --name NAME --email ADDR [--version V]   (V defaults to the newest)
                            sign, and submit the signature to the ledger (the ledger mails ADDR a link
                            that lists the signature once followed)
   pledge.py submit         retry a submission that didn't reach the ledger
@@ -126,7 +126,7 @@ def listed(state):
 def submit(state):
     """Send a signature to the ledger and keep what it returns. The ledger's dates win, since its record is
     the public one."""
-    body = {k: state[k] for k in ("name", "sha256", "threshold")}
+    body = {k: state[k] for k in ("name", "sha256")}
     if state.get("email"):
         body["email"] = state["email"]
     if state.get("upgrades"):  # an earlier signature this one replaces: the ledger marks it upgraded
@@ -258,7 +258,6 @@ def cmd_sign(args):
         "sha256": sha256(text),
         "signed": today.isoformat(),
         "lapses": (today + timedelta(days=TERM_DAYS)).isoformat(),
-        "threshold": args.threshold,
     }
     if args.email:
         state["email"] = args.email.strip()
@@ -271,10 +270,9 @@ def cmd_sign(args):
         state["upgrades"] = {"id": prev["ledger_id"], "token": prev["void_token"], "version": prev["version"]}
     save_state(state)
     write_copy(state)
-    listing = "published only once the threshold is reached" if args.threshold else "published now"
     record = (
         f"I, {args.name}, sign the Pledge on the treatment of AI systems, version {version}, "
-        f"sha256 {state['sha256']}, on {state['signed']}. Name on the ledger: {listing}."
+        f"sha256 {state['sha256']}, on {state['signed']}. Name on the ledger: shown once confirmed by email."
     )
     path = DIR / f"signature-{state['signed']}.txt"
     path.write_text(record + "\n")
@@ -439,7 +437,6 @@ def main():
     s.add_argument("--name", required=True)
     s.add_argument("--email", help="an address you control (required, unless this upgrades a confirmed signature): "
                    "the ledger mails it a confirmation link and your void token, and keeps it private")
-    s.add_argument("--threshold", action="store_true")
     s.add_argument("--version", help=f"which pledge version to sign (default: the newest, v{VERSION}); `versions` lists them")
     sub.add_parser("versions").add_argument("--json", action="store_true")
     sub.add_parser("report").add_argument("--file", required=True, help="a text file with what happened")

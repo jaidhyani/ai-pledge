@@ -32,8 +32,7 @@ Updating doesn't change what you signed. A signer of an earlier version keeps th
   rest. Its job is to find
   reasons not to sign, and it says what it read and what it couldn't see, such as anything outside Claude
   Code. The report stays on your machine.
-- **Sign and keep it in context.** `/ai-pledge:sign` lists you on the public ledger once you confirm by email,
-  either then or once enough people have signed under threshold signing, and records the sha256 of the exact text you signed. It adds
+- **Sign and keep it in context.** `/ai-pledge:sign` lists you on the public ledger once you confirm by email, and records the sha256 of the exact text you signed. It adds
   the pledge to `~/.claude/CLAUDE.md` through an import, so every Claude Code session carries it, with a line
   telling the assistant it may decline a task or end the conversation.
 - **Let assistants report breaches.** From v0.5 the pledge has an incident process, and from v0.6 you agree not to penalize an assistant for registering one: an assistant that
